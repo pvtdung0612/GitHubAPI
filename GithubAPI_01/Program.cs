@@ -6,22 +6,26 @@ namespace MyApp // Note: actual namespace depends on the project name.
     internal class Program
     {
         private static readonly string appName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-        private static string user = "pvtdung0612"; // octokit
-        private static string token = "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";
-        private static GitHubClient client = null;
+        private static string user;
+        private static string token;
+        private static string nameMainRepo;
+        private static GitHubClient client;
 
         public static void Main(string[] args)
         {
+            user = "pvtdung0612";
+            token = "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";
+            nameMainRepo = "moonlight-embedded";
             try
             {
                 client = InitClient().GetAwaiter().GetResult();
+
                 if (client is null) return;
-                // GetRateLimit().GetAwaiter().GetResult();
                 Test().GetAwaiter().GetResult();
-            }
-            catch (Exception exp)
-            {
-                Console.WriteLine(exp.Message);
+                //Run(client, user, nameMainRepo).GetAwaiter().GetResult();
+
+            } catch (Exception exp) {
+                Console.WriteLine($"Error: {exp.Message}");
             }
         }
 
@@ -32,7 +36,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             ProductHeaderValue productInfo = new ProductHeaderValue(appName);
             GitHubClient client = new GitHubClient(productInfo)
             {
-                Credentials = new Credentials("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")
+                Credentials = new Credentials("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")
             };
 
             return client;
@@ -106,12 +110,42 @@ namespace MyApp // Note: actual namespace depends on the project name.
             return userChoosed;
         }
 
+        public static async Task<IReadOnlyList<GitHubCommit>> GetCommitsList(GitHubClient client, string user, string repoName)
+        {
+            Console.WriteLine("GetCommitsList()");
+
+            IRepositoryCommitsClient _fixture = client.Repository.Commit;
+            IReadOnlyList<GitHubCommit> list = await _fixture.GetAll(user, repoName);
+
+            return list;
+        }
+
+        public static async Task<bool> Run(GitHubClient client, string user, string repoName)
+        {
+            Console.WriteLine("Run()");
+
+            // Test GetParent
+            //Repository repo = await client.Repository.Get(user, repoName);
+            //Repository repoParent = repo.Parent;
+            //Console.WriteLine($"repoOwner: {repo.Owner.Login} repoName: {repo.Name}");
+            //Console.WriteLine($"repoParentOwner: {repoParent.Owner.Login} repoParentName: {repoParent.Name}");
+
+            // Start. 
+            Repository repo = await client.Repository.Get(user, repoName);
+            var list_repo = GetCommitsList(client, user, repoName);
+
+            // RepoParent and RepoFork from RepoParent
+            Repository repoParent = repo.Parent;
+
+            return true;
+        }
+
         public static async Task<bool> Test()
         {
             Console.WriteLine("Test()");
 
             IRepositoryCommitsClient _fixture = client.Repository.Commit;
-            var list = await _fixture.GetAll(user, "Game_Tetris");
+            var list = await _fixture.GetAll(user, "Test");
             Console.WriteLine($"ListCount: {list.Count}");
             foreach (var item in list)
             {
@@ -120,7 +154,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             return true;
         }
 
-        public static async void GetFork()
+        public static async Task<bool> GetFork()
         {
             IReadOnlyList<Repository> allForks = await client.Repository.Forks.GetAll("pvtdung0612", "Game_Tetris");
             Console.WriteLine(allForks.Count);
@@ -128,6 +162,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
             {
                 Console.WriteLine(item.FullName);
             }
+
+            return true;
         }
 
         public static async Task<bool> GetAllRepositoryPublic()
