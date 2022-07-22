@@ -1,0 +1,17 @@
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\GithubAPI_01.exe
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\GithubAPI_01.deps.json
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\GithubAPI_01.runtimeconfig.json
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\GithubAPI_01.dll
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\GithubAPI_01.pdb
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\bin\Debug\net6.0\Octokit.dll
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.csproj.AssemblyReference.cache
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.GeneratedMSBuildEditorConfig.editorconfig
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.AssemblyInfoInputs.cache
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.AssemblyInfo.cs
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.csproj.CoreCompileInputs.cache
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.csproj.CopyComplete
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.dll
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\refint\GithubAPI_01.dll
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.pdb
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\GithubAPI_01.genruntimeconfig.cache
+E:\dung\UET-VNU\Lab\C#\GithubAPI Console\GithubAPI_01\GithubAPI_01\obj\Debug\net6.0\ref\GithubAPI_01.dll
