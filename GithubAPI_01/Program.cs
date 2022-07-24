@@ -1,5 +1,5 @@
-﻿using System;
-using Octokit;
+﻿using Octokit;
+using System.Diagnostics;
 
 namespace MyApp // Note: actual namespace depends on the project name.
 {
@@ -14,7 +14,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         public static void Main(string[] args)
         {
             user = "pvtdung0612";
-            token = "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";
+            token = "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";
             nameMainRepo = "moonlight-embedded";
             try
             {
@@ -22,8 +22,10 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                 if (client is null) return;
 
-                Test().GetAwaiter().GetResult();
-                //Run(client, user, nameMainRepo).GetAwaiter().GetResult();
+                GetRateLimit().GetAwaiter().GetResult();
+
+                // Test().GetAwaiter().GetResult();
+                Run(client, user, "BigExercise1_Dictionary").GetAwaiter().GetResult();
 
             } catch (Exception exp) {
                 Console.WriteLine($"Error: {exp.Message}");
@@ -96,9 +98,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 var howManyCoreRequestsDoIHaveLeft = coreRateLimit.Remaining;
                 var whenDoesTheCoreLimitReset = coreRateLimit.Reset; // UTC time
 
-                Console.WriteLine(client);
-                Console.WriteLine(coreRateLimit);
-                Console.WriteLine($"02 - coreRateLimit - Limit: {coreRateLimit.Limit} Remaining: {coreRateLimit.Remaining} Reset: {coreRateLimit.Reset}");
+                Console.WriteLine($"coreRateLimit - Limit: {coreRateLimit.Limit} Remaining: {coreRateLimit.Remaining} Reset: {coreRateLimit.Reset}");
 
                 // the "search" object provides your rate limit status for the Search API.
                 var searchRateLimit = miscellaneousRateLimit.Resources.Search;
@@ -107,9 +107,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 var howManySearchRequestsDoIHaveLeft = searchRateLimit.Remaining;
                 var whenDoesTheSearchLimitReset = searchRateLimit.Reset; // UTC time
 
-                Console.WriteLine(client);
-                Console.WriteLine(searchRateLimit);
-                Console.WriteLine($"02 - searchRateLimit - Limit: {searchRateLimit.Limit} Remaining: {searchRateLimit.Remaining} Reset: {searchRateLimit.Reset}");
+                Console.WriteLine($"searchRateLimit - Limit: {searchRateLimit.Limit} Remaining: {searchRateLimit.Remaining} Reset: {searchRateLimit.Reset}");
             }
             return true;
         }
@@ -154,6 +152,24 @@ namespace MyApp // Note: actual namespace depends on the project name.
             Repository repo = await client.Repository.Get(user, repoName);
 
             return repo;
+        }
+
+        public static async Task<IReadOnlyList<Repository>> GetForks(GitHubClient client, string user, string repoName)
+        {
+            Console.WriteLine("GetForks()");
+
+            IReadOnlyList<Repository> allForks = await client.Repository.Forks.GetAll(user, repoName);
+
+            return allForks;
+        }
+
+        public static async Task<Repository> GetParentRepository(GitHubClient client, string user, string repoName)
+        {
+            Console.WriteLine("GetParentRepository()");
+
+            Repository repo = await client.Repository.Get(user, repoName);
+
+            return repo.Parent;
         }
 
         /// <summary>
@@ -233,18 +249,46 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             Console.WriteLine("Run()");
 
-            // Test GetParent
-            //Repository repo = await client.Repository.Get(user, repoName);
-            //Repository repoParent = repo.Parent;
-            //Console.WriteLine($"repoOwner: {repo.Owner.Login} repoName: {repo.Name}");
-            //Console.WriteLine($"repoParentOwner: {repoParent.Owner.Login} repoParentName: {repoParent.Name}");
+            Stopwatch watch = Stopwatch.StartNew();
+            watch.Start();
 
-            // Start. 
-            Repository repo = await client.Repository.Get(user, repoName);
+            // get commits in repo input
+            List<GitHubCommit> list1 = await GetRepositoryAllBranchsCommits(client, user, repoName);
+            if (list1 == null) return false;
+            Console.WriteLine("check1");
 
-            // RepoParent and RepoFork from RepoParent
-            Repository repoParent = repo.Parent;
+            // get commits in repo fork from repo input or fork from origin repo different repo input
+            List<GitHubCommit> list2 = new List<GitHubCommit>();
+            // get commits repo fork from origin repo
+            Repository repoParent = (await client.Repository.Get(user, repoName)).Parent;
+            if (repoParent is null) return false;
+            foreach (var item in await client.Repository.Forks.GetAll(user, repoParent.Name))
+            {
+                if (item.Name != repoName)
+                {
+                    list2.AddRange(await GetRepositoryAllBranchsCommits(client, user, repoName));
+                }
+            }
+            Console.WriteLine("check2");
+            // get commits repo fork from repo input
+            foreach (var item in await client.Repository.Forks.GetAll(user, repoName))
+            {
+                list2.AddRange(await GetRepositoryAllBranchsCommits(client, user, repoName));
+            }
+            Console.WriteLine("check3");
 
+            List<GitHubCommit> listExcept = list1.Except(list2).ToList<GitHubCommit>();
+            Console.WriteLine("check4");
+            foreach (var item in listExcept)
+            {
+                if (item.Author != null && item.Commit != null && item.Sha != null)
+                    Console.WriteLine($"Owner: {item.Author.Login} Message: {item.Commit.Message} Sha: {item.Sha}");
+            }
+            Console.WriteLine("check5");
+            Console.WriteLine($"Count: {listExcept.Count}");
+
+            watch.Stop();
+            Console.WriteLine("Program time: " + watch.Elapsed);
             return true;
         }
 
@@ -253,50 +297,30 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             Console.WriteLine("Test()");
 
-            List<GitHubCommit> listCommits = GetRepositoryAllBranchsCommits(client, user, "Test").GetAwaiter().GetResult();
-            foreach (var item in listCommits)
+            Stopwatch sw =  Stopwatch.StartNew();
+            List<string> strings1 = new List<string>()
             {
-                Console.WriteLine($"CommitMessage: {item.Commit.Message} CommitSha: {item.Sha}");
+                "1", "2", "3", "4", "5", "6", 
+            };
+            List<string> strings2 = new List<string>()
+            {
+                "5", "6", "7", "8", "9", "10",
+            };
+
+            sw.Start();
+            foreach (var item in strings1.Except(strings2))
+            {
+                Console.WriteLine(item);
             }
-
-            //var repoCurrent = await client.Repository.GetAllForCurrent();
-            //repoCurrent = new List<Repository>(repoCurrent);
-
-            //foreach (var repoItem in repoCurrent)
-            //{
-            //    var repoCommits = await client.Repository.Commit.GetAll(repoItem.Id);
-            //    foreach (var commitItem in repoCommits)
-            //    {
-            //        Console.WriteLine($"Repo: {repoItem.Name} CommitUrl: {commitItem.Url} CommitVerification: {commitItem.Commit.Verification.Payload}");
-            //    }
-            //}
-
-            //IRepositoryCommitsClient _fixture = client.Repository.Commit;
-            //var list = await _fixture.GetAll(user, "Test");
-            //Console.WriteLine($"ListCount: {list.Count}");
-            //foreach (var item in list)
-            //{
-            //    Console.WriteLine($"ItemUrl: {item.Commit.Url} ItemMessage: {item.Commit.Message}");
-            //}
+            sw.Stop();
+            Console.WriteLine("Time: " + sw.Elapsed);
             return true;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Code below are being developed, has been checked yet ///////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public static async Task<bool> GetFork()
-        {
-            IReadOnlyList<Repository> allForks = await client.Repository.Forks.GetAll("pvtdung0612", "Game_Tetris");
-            Console.WriteLine(allForks.Count);
-            foreach (var item in allForks)
-            {
-                Console.WriteLine(item.FullName);
-            }
-
-            return true;
-        }
-
+        
         public static async Task<bool> GetAllRepositoryPublic()
         {
             Console.WriteLine("GetAllRepositoryPublic");
