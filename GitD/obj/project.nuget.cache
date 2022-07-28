@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "G+un5MuSeriBFbfDWWq0rFzosPm1pywS3/jVeAPNqr4a57I4p9ypmHdAAZg9Y2KEJfY7Z/F5gQIoEgCSXpNj1g==",
+  "success": true,
+  "projectFilePath": "E:\\dung\\UET-VNU\\Lab\\C#\\GithubAPI WPF\\GitD\\GitD\\GitD.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\controlzex\\4.4.0\\controlzex.4.4.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\mahapps.metro\\2.4.9\\mahapps.metro.2.4.9.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.19\\microsoft.xaml.behaviors.wpf.1.1.19.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\octokit\\1.0.0\\octokit.1.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512"
+  ],
+  "logs": []
+}
